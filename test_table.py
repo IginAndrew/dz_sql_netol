@@ -87,7 +87,7 @@ with psycopg2.connect(database="postgres", user="andrew", password="12048937") a
     # delete_phone("1")
     # delete_client("2")
     # find_client("""SELECT client.first_name, client.last_name, phone.phone
-    #     FROM client JOIN phone ON  client.id = phone.client_id and phone = 325
+    # FROM client JOIN phone ON  client.id = phone.client_id and phone = 325
     #     """)
     conn.commit()
 
