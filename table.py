@@ -102,7 +102,6 @@ def find_client(first_name=None, last_name=None, e_mail=None, phone: int = None)
             """, (first_name, last_name, e_mail, phone))
         print(*cur.fetchall())
 
-
 if __name__ == '__main__':
     with psycopg2.connect(database="py_sql", user="andrew", password="12048937") as conn:
         with conn.cursor() as cur:
