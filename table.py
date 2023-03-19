@@ -1,7 +1,7 @@
 import psycopg2
 
 
-def create_client_phone():
+def create_client_phone(conn):
 
     with conn.cursor() as cur:
         cur.execute("""
@@ -22,7 +22,7 @@ def create_client_phone():
             """)
 
 
-def add_client(id, first_name=None, last_name=None, e_mail=None):
+def add_client(conn, id, first_name=None, last_name=None, e_mail=None):
 
     with conn.cursor() as cur:
         cur.execute(f"""
@@ -30,15 +30,15 @@ def add_client(id, first_name=None, last_name=None, e_mail=None):
                """)
 
 
-def add_phone(id, phone, client_id):
+# def add_phone(conn, id, phone, client_id):
+#
+#     with conn.cursor() as cur:
+#         cur.execute(f"""
+#                    INSERT INTO phone VALUES ('{id}', '{phone}', '{client_id}');
+#                """)
 
-    with conn.cursor() as cur:
-        cur.execute(f"""
-                   INSERT INTO phone VALUES ('{id}', '{phone}', '{client_id}');
-               """)
 
-
-def add_phone_2(id: int, phone: int, client_id):
+def add_phone_2(conn, id: int, phone: int, client_id):
     with conn.cursor() as cur:
         cur.execute(
             """
@@ -71,7 +71,7 @@ def add_phone_2(id: int, phone: int, client_id):
         return print("успех")  # Возвращаем сообщение об успехе
 
 
-def change_client(id, first_name=None, last_name=None, e_mail=None):
+def change_client(conn, id, first_name=None, last_name=None, e_mail=None):
 
     with conn.cursor() as cur:
         cur.execute(f"""
@@ -80,21 +80,21 @@ def change_client(id, first_name=None, last_name=None, e_mail=None):
                    """)
 
 
-def delete_phone(id: str):
+def delete_phone(conn, id: str):
 
     with conn.cursor() as cur:
         cur.execute("""DELETE FROM phone WHERE id=%s;
             """, (id,))
 
 
-def delete_client(id: str):
+def delete_client(conn, id: str):
 
     with conn.cursor() as cur:
         cur.execute("""DELETE FROM client WHERE id=%s;
                 """, (id,))
 
 
-def find_client(first_name=None, last_name=None, e_mail=None, phone: int = None):
+def find_client(conn, first_name=None, last_name=None, e_mail=None, phone: int = None):
         cur.execute("""
             SELECT first_name, last_name, e_mail FROM client
             JOIN phone ON phone.client_id = client.id
@@ -106,11 +106,11 @@ if __name__ == '__main__':
     with psycopg2.connect(database="py_sql", user="andrew", password="12048937") as conn:
         with conn.cursor() as cur:
             # create_db(conn, cur)
-            # create_client_phone()
-            # add_client(3, "ANDREY", "FIGIN", "andefig@ya.ru")
-            # add_phone(1, 89513284054, 1)
-            # change_client(1, 'Andrew')
-            # delete_phone('1')
-            # delete_client('3')
-            find_client(None, None, None, 89513284055)
-            # add_phone_2(9, 89513274016, 2)
+            # create_client_phone(conn)
+            # add_client(conn, 3, "ANDREY", "FIGIN", "andefig@ya.ru")
+            # add_phone(conn, 1, 89513284054, 1)
+            # change_client(conn, 1, 'Andrew')
+            # delete_phone(conn, '1')
+            # delete_client(conn, '3')
+            find_client(conn, None, None, None, 89513284055)
+            # add_phone_2(conn, 9, 89513274016, 2)
