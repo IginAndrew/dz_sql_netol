@@ -1,16 +1,5 @@
-import sqlalchemy
-from sqlalchemy.orm import sessionmaker
-
-from models import create_tables, Publisher, Book, Stock, Sale, Shop
-
-DSN = "postgresql://andrew:12048937@localhost:5432/sql_alchemy"
-engine = sqlalchemy.create_engine(DSN)
-
-# create_tables(engine)
-
-
-Session = sessionmaker(bind=engine)
-session = Session()
+from models import Publisher, Book, Stock, Sale, Shop
+from podkl import session
 
 def shop_name(publisher_name):
     total = []

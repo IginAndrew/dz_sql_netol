@@ -3,6 +3,7 @@ from typing import Any
 import sqlalchemy as sq
 from sqlalchemy import Column
 from sqlalchemy.orm import declarative_base, relationship
+from podkl import engine
 
 Base = declarative_base()
 
@@ -64,5 +65,11 @@ class Shop(Base):
 
 
 def create_tables(engine):
-    # Base.metadata.drop_all(engine)
+    Base.metadata.drop_all(engine)
+    Base.metadata.create_all(engine)
+
+
+
+if __name__ == '__main__':
+    Base.metadata.drop_all(engine)
     Base.metadata.create_all(engine)
