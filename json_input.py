@@ -1,17 +1,8 @@
 import json
 
-import sqlalchemy
-from sqlalchemy.orm import sessionmaker
+from models import Publisher, Book, Stock, Sale, Shop
 
-from models import create_tables, Publisher, Book, Stock, Sale, Shop
-
-
-DSN = "postgresql://andrew:12048937@localhost:5432/sql_alchemy"
-engine = sqlalchemy.create_engine(DSN)
-create_tables(engine)
-
-Session = sessionmaker(bind=engine)
-session = Session()
+from podkl import session
 
 with open('tests_data.json', 'r') as fd:
     data = json.load(fd)
