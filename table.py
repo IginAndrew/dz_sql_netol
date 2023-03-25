@@ -39,14 +39,21 @@ def add_client(conn, first_name=None, last_name=None, e_mail=None, phone=None):
                """)
         client = cur.fetchone()
         if phone is not None:
+            cur.execute(
+                """
+                SELECT phone.phone from phone 
+                WHERE phone = %s; 
+                """,
+                (phone,)  # Передаем номер телефона
+            )
+            if cur.fetchone():
+                return print("такой номер есть, добавление номера невозможно")  # Соообщаем что такой номер есть
+            conn.rollback()
             cur.execute("""
                     INSERT INTO phone(phone, client_id) VALUES(%s, %s) RETURNING id
-                    """, (phone, client[0]))
-            client_phone = cur.fetchone()
-            if client_phone == "такой номер есть":
-                conn.rollback()
-                return print("добавление невозможно")
+                    """, (phone, client[0],))
             conn.commit()
+
     print(f'Добавили клиента {client}')
 
 
@@ -76,19 +83,46 @@ def add_phone_2(conn, phone: int, client_id):
             %s, %s
             ) RETURNING id;
             """,
-            (phone, client_id)
+            (phone, client_id,)
         )
         conn.commit()  # Подтверждаем изменения
         return print("успех")  # Возвращаем сообщение об успехе
 
 
-def change_client(conn, id, first_name=None, last_name=None, e_mail=None):
-    with conn.cursor() as cur:
-        cur.execute(f"""
-                       UPDATE client SET first_name = '{first_name}'
-                       WHERE id = '{id}';
-                   """)
+# def change_client(conn, id, first_name=None, last_name=None, e_mail=None):
+#     with conn.cursor() as cur:
+#         cur.execute(f"""
+#                        UPDATE client SET first_name = '{first_name}'
+#                        WHERE id = '{id}';
+#                    """)
 
+def change_client_2(conn, id, first_name=None, last_name=None, e_mail=None):
+    with conn.cursor() as cur:
+        cur.execute("""
+        SELECT first_name, last_name, e_mail, id FROM client WHERE id = %s
+        """, (id, ))
+        id_clienta = cur.fetchone()
+        if not id_clienta:
+            return print('такого клиента нет')
+        id_clienta_list = list(id_clienta)
+        print(id_clienta_list)
+        if first_name is not None:
+            id_clienta_list[0] = first_name
+        else:
+            first_name = id_clienta_list[0]
+        if last_name is not None:
+            id_clienta_list[1] = last_name
+        else:
+            last_name = id_clienta_list[1]
+        if e_mail is not None:
+            id_clienta_list[2] = e_mail
+        else:
+            e_mail = id_clienta_list[2]
+        cur.execute("""
+        UPDATE client SET first_name=%s, last_name=%s, e_mail=%s WHERE id=%s
+        """, (first_name, last_name, e_mail, id,))
+        conn.commit()
+    return "Пользователь успешно изменен"
 
 def delete_phone(conn, id: str):
     with conn.cursor() as cur:
@@ -113,8 +147,8 @@ def find_client(conn, first_name=None, last_name=None, e_mail=None, phone: int =
 
 with psycopg2.connect(database="py_sql", user="andrew", password="12048937") as conn:
     # create_client_phone(conn)
-    # add_client(conn, "Pety", "Vai", "vai@ya.ru", 85858742156)
-    # change_client(conn, 1, 'Andrew')
+    # add_client(conn, "Pety", "Valadimirov", "ladimirov@ya.ru", 85858742156)
+    # change_client_2(conn, 10, None, 'Pupkin')
     # delete_phone(conn, '1')
     # delete_client(conn, '3')
     find_client(conn, None, None, None, 89522365478)
