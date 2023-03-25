@@ -136,14 +136,43 @@ def delete_client(conn, id: str):
                 """, (id,))
 
 
-def find_client(conn, first_name=None, last_name=None, e_mail=None, phone: int = None):
+# def find_client(conn, first_name=None, last_name=None, e_mail=None, phone: int = None):
+#     with conn.cursor() as cur:
+#         cur.execute("""
+#             SELECT first_name, last_name, e_mail FROM client
+#             JOIN phone ON phone.client_id = client.id
+#             WHERE first_name=%s OR last_name=%s OR e_mail=%s OR phone=%s;
+#             """, (first_name, last_name, e_mail, phone))
+#         print(*cur.fetchall())
+
+def find_client(conn, first_name=None, last_name=None, e_mail=None, phone=None):
     with conn.cursor() as cur:
-        cur.execute("""
-            SELECT first_name, last_name, e_mail FROM client
-            JOIN phone ON phone.client_id = client.id
-            WHERE first_name=%s OR last_name=%s OR e_mail=%s OR phone=%s;
-            """, (first_name, last_name, e_mail, phone))
-        print(*cur.fetchall())
+        if first_name is None: # Если имя не было передано
+            first_name = '%'  # Определяем новое значение, которое означает, что здесь может быть любая строка
+        if last_name is None:  # Если фамилия не была передана
+            last_name = '%'  # Определяем новое значение, которое означает, что здесь может быть любая строка
+        if e_mail is None:  # Если почта не была передана
+            e_mail = '%'  # Определяем новое значение, которое означает, что здесь может быть любая строка
+        list_client = [first_name, last_name, e_mail]  # Создаем список из имени, фамилии и почты
+        new_str = ''  #Определяем переменную с пустой строкой. Далее эта строка будет вставляться в тело запоса.
+        if phone is not None:  #Если телефон содержит значение
+            new_str = 'AND ARRAY_AGG(phone.phone[1]) && ARRAY[%s]'  #Присваиваем переменной, которую определили через строку выше, новое значение с условием поиска телефона (в данном условии происходит пересечение массивов). Вместо точек указываем столбец с номерами из таблицы номеров.
+            list_client.append(phone)  #Добавляем в ранее созданный список телефон, который передали в функцию.
+        select_client = f""" 
+        SELECT  e_mail, first_name,last_name, CASE
+                WHEN ARRAY_AGG(phone.phone[1]) = '{{Null}}' THEN ARRAY[]::BIGINT[]  
+                ELSE ARRAY_AGG(phone.phone[1]) 
+            END phone 
+        FROM client 
+        LEFT JOIN phone ON client.id = phone.client_id 
+        GROUP BY client.e_mail, client.first_name, client.last_name 
+        HAVING client.e_mail LIKE %s AND client.first_name LIKE %s AND client.last_name LIKE %s {new_str} 
+        """
+        cur.execute(
+            select_client,  #Передаем переменную с запросом
+            list_client #Передаем список с значениями, который создали ранее
+        )
+        return cur.fetchall()
 
 with psycopg2.connect(database="py_sql", user="andrew", password="12048937") as conn:
     # create_client_phone(conn)
@@ -151,5 +180,5 @@ with psycopg2.connect(database="py_sql", user="andrew", password="12048937") as 
     # change_client_2(conn, 10, None, 'Pupkin')
     # delete_phone(conn, '1')
     # delete_client(conn, '3')
-    find_client(conn, None, None, None, 89522365478)
+    find_client(conn, None, 'Andrew')
     # add_phone_2(conn, 89513875023, 8)
