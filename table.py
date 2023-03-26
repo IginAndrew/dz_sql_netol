@@ -89,13 +89,6 @@ def add_phone_2(conn, phone: int, client_id):
         return print("успех")  # Возвращаем сообщение об успехе
 
 
-# def change_client(conn, id, first_name=None, last_name=None, e_mail=None):
-#     with conn.cursor() as cur:
-#         cur.execute(f"""
-#                        UPDATE client SET first_name = '{first_name}'
-#                        WHERE id = '{id}';
-#                    """)
-
 def change_client_2(conn, id, first_name=None, last_name=None, e_mail=None):
     with conn.cursor() as cur:
         cur.execute("""
