@@ -162,8 +162,8 @@ def find_client_1(conn, first_name=None, last_name=None, e_mail=None, phone=None
 with psycopg2.connect(database="py_sql", user="andrew", password="12048937") as conn:
     # create_client_phone(conn)
     # add_client(conn, "Pety", "Valadimirov", "ladimirov@ya.ru", 85858742156)
-    # change_client_2(conn, id=10, first_name='Jupkin')
+    change_client_2(conn, id=10, first_name='Jupkin')
     # delete_phone(conn, '1')
     # delete_client(conn, '3')
-    find_client_1(conn, last_name='Dima')
+    # find_client_1(conn, last_name='Dima')
     # add_phone_2(conn, 89513875023, 8)
