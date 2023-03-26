@@ -136,14 +136,6 @@ def delete_client(conn, id: str):
                 """, (id,))
 
 
-def find_client(conn, first_name=None, last_name=None, e_mail=None, phone: int = None):
-    with conn.cursor() as cur:
-        cur.execute("""
-            SELECT first_name, last_name, e_mail, phone FROM client
-            JOIN phone ON phone.client_id = client.id
-            WHERE first_name=%s OR last_name=%s OR e_mail=%s OR phone=%s;
-            """, (first_name, last_name, e_mail, phone))
-        print(*cur.fetchone())
 
 def find_client_1(conn, first_name=None, last_name=None, e_mail=None, phone=None):
     with conn.cursor() as cur:
@@ -177,9 +169,8 @@ def find_client_1(conn, first_name=None, last_name=None, e_mail=None, phone=None
 with psycopg2.connect(database="py_sql", user="andrew", password="12048937") as conn:
     # create_client_phone(conn)
     # add_client(conn, "Pety", "Valadimirov", "ladimirov@ya.ru", 85858742156)
-    # change_client_2(conn, 10, None, 'Pupkin')
+    # change_client_2(conn, id=10, first_name='Jupkin')
     # delete_phone(conn, '1')
     # delete_client(conn, '3')
-    find_client(conn, None, 'Minin')
-    # find_client_1(conn, None, 'Minin')
+    find_client_1(conn, last_name='Dima')
     # add_phone_2(conn, 89513875023, 8)
